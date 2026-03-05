@@ -16,7 +16,7 @@ def run_scan(configpath: str = ""):
     This will open a configuration file provided by the user
     and use it's information to configure the scan.
     """
-    _logger = logging()
+    _logger = logging.Logger("log")
     try:
         f = open(configpath)
         options = json.loads(f.read())
@@ -35,7 +35,7 @@ def run_scan(configpath: str = ""):
 
     # Panda config
     filepath = options["filepath"]
-    filename = options["filename"]
+    filename = options["filename"] + ".h5"
     triggersPerStep = options["triggersPerStep"]
     #############################################
 

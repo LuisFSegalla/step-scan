@@ -1,0 +1,11 @@
+{
+    "motorPV": "pv-for-motion",
+    "pandaPV":"pv-for-panda",
+    "startPos": -1,
+    "stopPos": 0,
+    "step": 0.1,
+    "mres": -2e-5,
+    "filepath": "path",
+    "filename": "name",
+    "triggersPerStep": 200
+}

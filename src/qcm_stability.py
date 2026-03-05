@@ -22,23 +22,28 @@ def run_scan(configpath: str = ""):
         options = json.loads(f.read())
     except OSError as e:
         _logger.error(f"Could not open the file!\n{e}")
-    #############################################
-    # USER CONFIG
-    motorPV = options["motorPV"]  # CA
-    pandaPV = options["pandaPV"]  # PVA
+        return
 
-    # Motor config
-    startPos = options["startPos"]
-    stopPos = options["stopPos"]
-    step = options["step"]
-    mres = options["mres"]
+    try:
+        #############################################
+        # USER CONFIG
+        motorPV = options["motorPV"]  # CA
+        pandaPV = options["pandaPV"]  # PVA
 
-    # Panda config
-    filepath = options["filepath"]
-    filename = options["filename"] + ".h5"
-    triggersPerStep = options["triggersPerStep"]
-    #############################################
+        # Motor config
+        startPos = options["startPos"]
+        stopPos = options["stopPos"]
+        step = options["step"]
+        mres = options["mres"]
 
+        # Panda config
+        filepath = options["filepath"]
+        filename = options["filename"] + ".h5"
+        triggersPerStep = options["triggersPerStep"]
+        #############################################
+    except KeyError as e:
+        _logger.error(f"key error while reading from config file\n{e}")
+        return
     motorRBV = motorPV + ".RBV"
     motorDMOV = motorPV + ".DMOV"
     motorTWV = motorPV + ".TWV"

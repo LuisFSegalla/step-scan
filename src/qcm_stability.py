@@ -16,12 +16,12 @@ def run_scan(configpath: str = ""):
     This will open a configuration file provided by the user
     and use it's information to configure the scan.
     """
+    _logger = logging()
     try:
         f = open(configpath)
         options = json.loads(f.read())
     except OSError as e:
-        logging.error(f"Could not open the file!\n{e}")
-    """Method for running a step scan."""
+        _logger.error(f"Could not open the file!\n{e}")
     #############################################
     # USER CONFIG
     motorPV = options["motorPV"]  # CA
@@ -51,7 +51,6 @@ def run_scan(configpath: str = ""):
     pandaPcompPulses = pandaPV + ":PCOMP1:PULSES"
 
     # Pulse Block
-    pandaPulseWidth = pandaPV + "PULSE1:WIDTH"
     pandaPulsePulses = pandaPV + ":PULSE1:PULSES"
 
     # PCAP Block

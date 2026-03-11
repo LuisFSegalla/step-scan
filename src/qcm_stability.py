@@ -40,6 +40,7 @@ def run_scan(configpath: str = ""):
         filepath = options["filepath"]
         filename = options["filename"] + ".h5"
         triggersPerStep = options["triggersPerStep"]
+        triggerWidth = options["triggerWidth"]
         #############################################
     except KeyError as e:
         _logger.error(f"key error while reading from config file\n{e}")
@@ -57,6 +58,7 @@ def run_scan(configpath: str = ""):
 
     # Pulse Block
     pandaPulsePulses = pandaPV + ":PULSE1:PULSES"
+    pandaPulseWidth = pandaPV + ":PULSE1:WIDTH"
 
     # PCAP Block
     pandaPCAPEnable = pandaPV + ":PCAP:ENABLE"
@@ -90,6 +92,7 @@ def run_scan(configpath: str = ""):
 
     # Configure Pulse
     ctxt.put(pandaPulsePulses, triggersPerStep)
+    ctxt.put(pandaPulseWidth, triggerWidth)
 
     ctxt.put(pandaPcompEnable, "ONE")
     ctxt.put(pandaPCAPEnable, "ONE")
@@ -105,7 +108,7 @@ def run_scan(configpath: str = ""):
             Sleep(1)
             dmov = caget(motorDMOV)
 
-        Sleep(2)
+        Sleep(3)
         currentPos = caget(motorRBV)
 
     ctxt.put(pandaPcompEnable, "ZERO")

@@ -1,0 +1,10 @@
+#!/bin/bash
+echo "Creating the environment";\
+python -m venv step-scan-venv;\
+echo "Activating the environment";\
+source step-scan-venv/bin/activate;\
+echo "Upgrading the environment";\
+pip install --upgrade pip; \
+echo "Instaling step-scan module";\
+pip install .
+echo "Done";\

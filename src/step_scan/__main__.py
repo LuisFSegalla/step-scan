@@ -2,7 +2,7 @@
 
 from optparse import OptionParser
 
-from qcm_stability import run_scan
+from step_scan.qcm_stability import run_scan
 
 
 def main():

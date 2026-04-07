@@ -72,7 +72,7 @@ def run_scan(configpath: str = ""):
     caput(motorTWV, step)
 
     # Move motor to start position caput
-    caput(motorPV, startPos - step, wait=True, timeout=10)
+    caput(motorPV, startPos - step, wait=True, timeout=60)
     dmov = caget(motorDMOV)
 
     while not motorDMOV:
@@ -101,6 +101,9 @@ def run_scan(configpath: str = ""):
 
     currentPos = caget(motorRBV)
 
+    # Add some time to wait while the PandA is acquiring position data.
+    sleepPerStep = triggersPerStep * 1e-3 * 1.2
+    print(f"sleeping for {sleepPerStep}s each step")
     while currentPos <= stopPos:
         caput(motorTWF, 1)
         dmov = caget(motorDMOV)
@@ -108,7 +111,7 @@ def run_scan(configpath: str = ""):
             Sleep(1)
             dmov = caget(motorDMOV)
 
-        Sleep(3)
+        Sleep(sleepPerStep)
         currentPos = caget(motorRBV)
 
     ctxt.put(pandaPcompEnable, "ZERO")

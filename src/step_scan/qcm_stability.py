@@ -71,15 +71,17 @@ def run_scan(configpath: str = ""):
     numSteps = int(abs(stopPos - startPos) / step)
     caput(motorTWV, step)
 
+    print(
+        f"Sending motor to initial position @ ({startPos})"
+    )
     # Move motor to start position caput
-    caput(motorPV, startPos - step, wait=True, timeout=60)
-    dmov = caget(motorDMOV)
+    try:
+        caput(motorPV, startPos - step, wait=True, timeout=100)
+    except:
+        print("timeout while trying to move to initial position.\n\
+              Manualy move the motors to initial position and run the scan again.")
 
-    while not motorDMOV:
-        Sleep(1)
-        dmov = caget(motorDMOV)
-
-    print(f"Motor reached initial position ({startPos})")
+    print(f"Motor reached initial position @ ({startPos})")
 
     # Configure the PandA to receive data
     ctxt.put(pandaDataDirectory, filepath)
@@ -87,7 +89,7 @@ def run_scan(configpath: str = ""):
 
     # Configure PCOMP
     ctxt.put(pandaPcompStart, int(startPos / mres))
-    ctxt.put(pandaPcompStep, int(abs(step / mres)))
+    ctxt.put(pandaPcompStep, int(abs(step / mres)) - 20)
     ctxt.put(pandaPcompPulses, numSteps)
 
     # Configure Pulse
@@ -104,7 +106,7 @@ def run_scan(configpath: str = ""):
     # Add some time to wait while the PandA is acquiring position data.
     sleepPerStep = triggersPerStep * 1e-3 * 1.2
     print(f"sleeping for {sleepPerStep}s each step")
-    while currentPos <= stopPos:
+    while currentPos <= (stopPos + step):
         caput(motorTWF, 1)
         dmov = caget(motorDMOV)
         while not dmov:

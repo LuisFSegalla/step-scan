@@ -89,7 +89,7 @@ def run_scan(configpath: str = ""):
 
     # Configure PCOMP
     ctxt.put(pandaPcompStart, int(startPos / mres))
-    ctxt.put(pandaPcompStep, int(abs(step / mres)) - 20)
+    ctxt.put(pandaPcompStep, int(abs(step / mres)) - 50)
     ctxt.put(pandaPcompPulses, numSteps)
 
     # Configure Pulse
@@ -104,18 +104,21 @@ def run_scan(configpath: str = ""):
     currentPos = caget(motorRBV)
 
     # Add some time to wait while the PandA is acquiring position data.
-    sleepPerStep = triggersPerStep * 1e-3 * 1.2
+    sleepPerStep = triggersPerStep * 1e-3 * 2
     print(f"sleeping for {sleepPerStep}s each step")
     while currentPos <= (stopPos + step):
-        caput(motorTWF, 1)
-        dmov = caget(motorDMOV)
-        while not dmov:
-            Sleep(1)
+        try:
+            caput(motorTWF, 1)
             dmov = caget(motorDMOV)
+            while not dmov:
+                Sleep(1)
+                dmov = caget(motorDMOV)
 
-        Sleep(sleepPerStep)
-        currentPos = caget(motorRBV)
-
+            Sleep(sleepPerStep)
+            currentPos = caget(motorRBV)
+        except:
+            print("Problem while running the scan")
+            break
     ctxt.put(pandaPcompEnable, "ZERO")
     ctxt.put(pandaPCAPEnable, "ZERO")
     ctxt.put(pandaDataCapture, 0)

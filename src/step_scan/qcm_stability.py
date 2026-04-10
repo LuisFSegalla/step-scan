@@ -50,15 +50,11 @@ def run_scan(configpath: str = ""):
     motorTWV = motorPV + ".TWV"
     motorTWF = motorPV + ".TWF"
 
-    # PCOMP block
-    pandaPcompEnable = pandaPV + ":PCOMP1:ENABLE"
-    pandaPcompStart = pandaPV + ":PCOMP1:START"
-    pandaPcompStep = pandaPV + ":PCOMP1:STEP"
-    pandaPcompPulses = pandaPV + ":PCOMP1:PULSES"
-
     # Pulse Block
     pandaPulsePulses = pandaPV + ":PULSE1:PULSES"
     pandaPulseWidth = pandaPV + ":PULSE1:WIDTH"
+    pandaPulseTrig = pandaPV + ":PULSE1:TRIG"
+
 
     # PCAP Block
     pandaPCAPEnable = pandaPV + ":PCAP:ENABLE"
@@ -87,16 +83,10 @@ def run_scan(configpath: str = ""):
     ctxt.put(pandaDataDirectory, filepath)
     ctxt.put(pandaDataFilename, filename)
 
-    # Configure PCOMP
-    ctxt.put(pandaPcompStart, int(startPos / mres))
-    ctxt.put(pandaPcompStep, int(abs(step / mres)) - 50)
-    ctxt.put(pandaPcompPulses, numSteps)
-
     # Configure Pulse
     ctxt.put(pandaPulsePulses, triggersPerStep)
     ctxt.put(pandaPulseWidth, triggerWidth)
 
-    ctxt.put(pandaPcompEnable, "ONE")
     ctxt.put(pandaPCAPEnable, "ONE")
     ctxt.put(pandaDataCapture, 1)
     ctxt.put(pandaPcapArm, 1)
@@ -113,13 +103,15 @@ def run_scan(configpath: str = ""):
             while not dmov:
                 Sleep(1)
                 dmov = caget(motorDMOV)
-
+            ctxt.put(pandaPulseTrig, "ONE")
             Sleep(sleepPerStep)
             currentPos = caget(motorRBV)
+            ctxt.put(pandaPulseTrig, "ZERO")
+
         except:
             print("Problem while running the scan")
             break
-    ctxt.put(pandaPcompEnable, "ZERO")
+
     ctxt.put(pandaPCAPEnable, "ZERO")
     ctxt.put(pandaDataCapture, 0)
     ctxt.put(pandaPcapArm, 0)

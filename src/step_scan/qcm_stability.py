@@ -53,17 +53,10 @@ def run_scan(configpath: str = ""):
     motorTWF = motorPV + ".TWF"
     motorTWR = motorPV + ".TWR"
 
-    # PCOMP block
-    pandaPcompEnable = pandaPV + ":PCOMP1:ENABLE"
-    pandaPcompStart = pandaPV + ":PCOMP1:START"
-    pandaPcompStep = pandaPV + ":PCOMP1:STEP"
-    pandaPcompPulses = pandaPV + ":PCOMP1:PULSES"
-
     # Pulse Block
     pandaPulsePulses = pandaPV + ":PULSE1:PULSES"
     pandaPulseWidth = pandaPV + ":PULSE1:WIDTH"
     pandaPulseTrig = pandaPV + ":PULSE1:TRIG"
-
 
     # PCAP Block
     pandaPCAPEnable = pandaPV + ":PCAP:ENABLE"
@@ -72,8 +65,6 @@ def run_scan(configpath: str = ""):
     pandaDataDirectory = pandaPV + ":DATA:HDF_DIRECTORY"
     pandaDataFilename = pandaPV + ":DATA:HDF_FILE_NAME"
     pandaDataCapture = pandaPV + ":DATA:CAPTURE"
-
-    numSteps = int(abs(stopPos - startPos) / step)
 
     # Configure the PandA to receive data
     ctxt.put(pandaDataDirectory, filepath)
@@ -91,8 +82,8 @@ def run_scan(configpath: str = ""):
     sleepPerStep = triggersPerStep * 1e-3 * 2
 
     # Initial stop condition
-    stopCondition = stopPos + step if startPos < stopPos else stopPos - step
-    startCondition = startPos - step if startPos < stopPos else startPos + step
+    stop = stopPos + step if startPos < stopPos else stopPos - step
+    start = startPos - step if startPos < stopPos else startPos + step
 
     caput(motorTWV, step)
 
@@ -100,23 +91,23 @@ def run_scan(configpath: str = ""):
     for _ in range(loops):
 
         print(
-            f"Sending motor to initial position @ ({startCondition})"
+            f"Sending motor to initial position @ ({start})"
         )
 
         # Move motor to start position caput
         try:
-            caput(motorPV, startCondition, wait=True, timeout=100)
+            caput(motorPV, start, wait=True, timeout=100)
         except:
             print("timeout while trying to move to initial position.")
 
-        print(f"Motor reached initial position @ ({startCondition})")
+        print(f"Motor reached initial position @ ({start})")
 
         currentPos = caget(motorRBV)
 
         # Change which PV we're using based on the direction we're going with the motor
-        motorTW = motorTWF if startCondition < stopCondition else motorTWR
+        motorTW = motorTWF if start < stop else motorTWR
 
-        while currentPos <= stopCondition:
+        while currentPos <= stop:
             try:
                 caput(motorTW, 1)
                 dmov = caget(motorDMOV)
@@ -124,14 +115,18 @@ def run_scan(configpath: str = ""):
                     Sleep(1)
                     dmov = caget(motorDMOV)
 
+                ctxt.put(pandaPulseTrig, "ONE")
                 Sleep(sleepPerStep)
                 currentPos = caget(motorRBV)
+                ctxt.put(pandaPulseTrig, "ZERO")
             except:
                 print("Problem while running the scan")
                 break
 
+        tmp = stop
+        stop = start
+        start = tmp
 
-    ctxt.put(pandaPcompEnable, "ZERO")
     ctxt.put(pandaPCAPEnable, "ZERO")
     ctxt.put(pandaDataCapture, 0)
     ctxt.put(pandaPcapArm, 0)

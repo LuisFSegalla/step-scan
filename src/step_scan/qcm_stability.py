@@ -85,59 +85,40 @@ def run_scan(configpath: str = ""):
     stop = stopPos + step if startPos < stopPos else stopPos - step
     start = startPos - step if startPos < stopPos else startPos + step
 
+    numSteps = (abs(stop - start) / step) + 1
+
     caput(motorTWV, step)
 
     print(f"sleeping for {sleepPerStep}s each step")
-    for _ in range(loops):
-        print(f"Going from {start} to {stop}")
-        print(
-            f"Sending motor to initial position @ ({start})"
-        )
+    print(f"Acquiring {numSteps} steps per loop")
+    for i in range(loops):
+        print(f"Starting loop {i}\nGoing from {start} to {stop}")
 
         # Move motor to start position caput
         try:
+            print(f"Sending motor to initial position @ ({start})")
             caput(motorPV, start, wait=True, timeout=100)
         except:
             print("timeout while trying to move to initial position.")
 
         print(f"Motor reached initial position @ ({start})")
 
-        currentPos = caget(motorRBV)
-
         # Change which PV we're using based on the direction we're going with the motor
         motorTW = motorTWF if start < stop else motorTWR
-        if start < stop:
-            while currentPos <= stop - step:
-                try:
-                    caput(motorTW, 1)
+        for _ in range(numSteps):
+            try:
+                caput(motorTW, 1)
+                dmov = caget(motorDMOV)
+                while not dmov:
+                    Sleep(1)
                     dmov = caget(motorDMOV)
-                    while not dmov:
-                        Sleep(1)
-                        dmov = caget(motorDMOV)
 
-                    ctxt.put(pandaPulseTrig, "ONE")
-                    Sleep(sleepPerStep)
-                    currentPos = caget(motorRBV)
-                    ctxt.put(pandaPulseTrig, "ZERO")
-                except:
-                    print("Problem while running the scan")
-                    break
-        else:
-            while currentPos >= stop - step:
-                try:
-                    caput(motorTW, 1)
-                    dmov = caget(motorDMOV)
-                    while not dmov:
-                        Sleep(1)
-                        dmov = caget(motorDMOV)
-
-                    ctxt.put(pandaPulseTrig, "ONE")
-                    Sleep(sleepPerStep)
-                    currentPos = caget(motorRBV)
-                    ctxt.put(pandaPulseTrig, "ZERO")
-                except:
-                    print("Problem while running the scan")
-                    break
+                ctxt.put(pandaPulseTrig, "ONE")
+                Sleep(sleepPerStep)
+                ctxt.put(pandaPulseTrig, "ZERO")
+            except:
+                print("Problem while running the scan")
+                break
         tmp = stop
         stop = start
         start = tmp

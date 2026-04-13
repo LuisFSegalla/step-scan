@@ -8,5 +8,6 @@
     "filepath": "path",
     "filename": "name",
     "triggersPerStep": 200,
-    "triggerWidth": 1
+    "triggerWidth": 1,
+    "loops": 1
 }

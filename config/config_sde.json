@@ -1,0 +1,13 @@
+{
+    "motorPV": "AUTO1:M1",
+    "pandaPV":"LA16B-PY-PANDA-01",
+    "startPos": -21439300,
+    "stopPos": -21438700,
+    "step": 120,
+    "mres": -1,
+    "filepath": "/dls_sw/work/R3.14.12.7/support/hvc52853/data",
+    "filename": "test_sde5",
+    "triggersPerStep": 3000,
+    "triggerWidth": 1,
+    "loops": 2
+}

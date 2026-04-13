@@ -1,0 +1,13 @@
+{
+    "motorPV": "AUTO1:M1",
+    "pandaPV":"LA16B-PY-PANDA-01",
+    "startPos": -21439300,
+    "stopPos": -21438700,
+    "step": 60,
+    "mres": -1,
+    "filepath": "/scratch/hvc52853/data",
+    "filename": "bragg0resolution1",
+    "triggersPerStep": 3000,
+    "triggerWidth": 1,
+    "loops": 5
+}

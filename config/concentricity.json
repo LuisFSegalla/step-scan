@@ -1,0 +1,13 @@
+{
+    "motorPV": "AUTO1:M1",
+    "pandaPV":"LA16B-PY-PANDA-01",
+    "startPos": 0,
+    "stopPos": 8640000000,
+    "step": 2400000,
+    "mres": -1,
+    "filepath": "/dls_sw/work/R3.14.12.7/support/hvc52853/data",
+    "filename": "qcm1concentricity2",
+    "triggersPerStep": 3000,
+    "triggerWidth": 1,
+    "loops": 1
+}
